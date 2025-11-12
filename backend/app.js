@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
-
+const path = require("path");
 const booksRoutes = require("./routes/books");
 const userRoutes = require("./routes/user");
 
@@ -18,6 +18,8 @@ mongoose
     console.error(error);
   });
 
+app.use(express.json());
+
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -31,9 +33,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
-
 app.use("/api/books", booksRoutes);
 app.use("/api/auth", userRoutes);
+console.log(path.join(__dirname, "images"));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 module.exports = app;
