@@ -1,4 +1,6 @@
 const Book = require("../models/book");
+const fs = require("fs");
+const path = require("path");
 
 exports.getBooks = (req, res, next) => {
   Book.find()
@@ -49,6 +51,7 @@ exports.createBook = (req, res, next) => {
   const url = req.protocol + "://" + req.get("host");
 
   const book = new Book({
+    userId: req.auth.userId,
     title: bookObject.title,
     author: bookObject.author,
     imageUrl: url + "/images/" + req.file.filename,
@@ -67,5 +70,93 @@ exports.createBook = (req, res, next) => {
     })
     .catch((error) => {
       res.status(400).json({ error: error });
+    });
+};
+
+exports.deleteBook = (req, res, next) => {
+  Book.findById(req.params.id)
+    .then((book) => {
+      if (!book) {
+        return res.status(404).json({ error: "Book does not exist" });
+      }
+
+      if (!req.auth.userId || book.userId !== req.auth.userId) {
+        return res.status(403).json({ error: "Unauthorized request" });
+      }
+
+      if (book.imageUrl) {
+        const filename = book.imageUrl.split("/images/")[1];
+
+        fs.unlink(path.join("images", filename), (err) => {
+          if (err) {
+            console.error("Error deleting iamge file:", err);
+          }
+        });
+      }
+
+      book
+        .deleteOne()
+        .then(() => {
+          return res.status(200).json({ message: "Book deleted successfully" });
+        })
+        .catch((error) => {
+          res.status(500).json({ error });
+        });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error });
+    });
+};
+
+exports.createRating = (req, res, next) => {
+  console.log(`User id ${req.body.userId}`);
+
+  // authentication check
+  if (!req.auth.userId || req.body.userId !== req.auth.userId) {
+    return res.status(403).json({ error: "Unauthorized request" });
+  }
+
+  if (
+    !Number.isInteger(req.body.rating) ||
+    req.body.rating > 5 ||
+    req.body.rating < 1
+  ) {
+    return res.status(400).json({ error: "Bad rating" });
+  }
+
+  Book.findById(req.params.id)
+    .then((book) => {
+      if (!book) {
+        return res.status(404).json({ error: "Book does not exist" });
+      }
+
+      console.log(`Book's User Id ${book}`);
+
+      const alreadyRated = book.ratings.some(
+        (rating) => rating.userId === req.auth.userId
+      );
+
+      if (alreadyRated) {
+        return res.status(400).json({ error: "Rating already exists" });
+      }
+
+      const newRating = { userId: req.auth.userId, grade: req.body.rating };
+      book.ratings.push(newRating);
+
+      const total = book.ratings.reduce((sum, r) => sum + r.grade, 0);
+
+      book.averageRating = total / book.ratings.length;
+
+      book
+        .save()
+        .then(() => {
+          return res.status(201).json(book);
+        })
+        .catch((error) => {
+          res.status(500).json({ error: error });
+        });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error });
     });
 };
