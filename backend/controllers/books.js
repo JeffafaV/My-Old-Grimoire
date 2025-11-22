@@ -25,6 +25,50 @@ exports.getOneBook = (req, res, next) => {
     });
 };
 
+exports.updateBook = (req, res, next) => {
+  let bookObject = !req.file ? req.body : JSON.parse(req.body.book);
+
+  Book.findById(req.params.id)
+    .then((book) => {
+      if (!book) {
+        return res.status(404).json({ error: "Book does not exist" });
+      }
+
+      if (!req.auth.userId || book.userId !== req.auth.userId) {
+        return res.status(403).json({ error: "Unauthorized request" });
+      }
+
+      if (req.file) {
+        if (book.imageUrl) {
+          const oldFilename = book.imageUrl.split("/images/")[1];
+
+          fs.unlink(path.join("images", oldFilename), (err) => {
+            if (err) {
+              console.error("Error deleting iamge file:", err);
+            }
+          });
+        }
+
+        const url = req.protocol + "://" + req.get("host");
+        bookObject.imageUrl = url + "/images/" + req.file.filename;
+      }
+
+      delete bookObject._id;
+      delete bookObject.userId;
+
+      Book.updateOne({ _id: req.params.id }, { $set: bookObject })
+        .then(() => {
+          return res.status(200).json({ message: "Book updated successfully" });
+        })
+        .catch((error) => {
+          res.status(500).json({ error });
+        });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error });
+    });
+};
+
 exports.getBestRatedBooks = (req, res, next) => {
   Book.find()
     .sort({ averageRating: -1 })
