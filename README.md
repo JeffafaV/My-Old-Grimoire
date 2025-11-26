@@ -1,7 +1,5 @@
 # My-Old-Grimoire
-This project is a full-stack web application built with a Node.js/Express backend and a JavaScript frontend.
-It allows users to authenticate, create books, update them, delete them, and manage images.
-The backend provides a secure REST API, and the frontend interacts with it using HTTP requests.
+This project is a full-stack web application built with a Node.js/Express backend and a JavaScript frontend. It allows users to authenticate, create books, update them, delete them, and manage images. The backend provides a secure REST API, and the frontend interacts with it using HTTP requests.
 
 The app includes:
 
@@ -15,18 +13,21 @@ CRUD operations for books
 
 A separated frontend and backend environment
 
-Project Structure
+Project Structure 
+
 project-root/
 
-&emsp;frontend/     # Front-end application (HTML/CSS/JS or framework)
-&emsp;&emsp;...
-&emsp;backend/      # Back-end REST API (Node.js + Express)
+&emsp;frontend/ # Front-end application (HTML/CSS/JS or framework)   
+
+&emsp;&emsp;...  
+
+&emsp;backend/ # Back-end REST API (Node.js + Express)   
+
 &emsp;&emsp;server.js
 
 How to Run the Project
 
-You must launch the frontend and backend separately.
-
+You must launch the frontend and backend separately.  
 Run the Backend
 
 Open a terminal
@@ -35,11 +36,9 @@ Navigate to the backend directory:
 
 cd backend
 
-
 Start the server using Nodemon:
 
 nodemon server
-
 
 This will start your Express server and automatically restart it when files change.
 
@@ -51,11 +50,9 @@ Navigate to the frontend directory:
 
 cd frontend
 
-
 Start the frontend:
 
 npm start
-
 
 This launches the development server for the frontend.
 
