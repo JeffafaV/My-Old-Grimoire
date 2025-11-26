@@ -17,12 +17,11 @@ A separated frontend and backend environment
 
 Project Structure
 project-root/
-│
-├── frontend/     # Front-end application (HTML/CSS/JS or framework)
-│   └── ...
-│
-└── backend/      # Back-end REST API (Node.js + Express)
-    └── server.js
+
+&emsp;frontend/     # Front-end application (HTML/CSS/JS or framework)
+&emsp;&emsp;...
+&emsp;backend/      # Back-end REST API (Node.js + Express)
+&emsp;&emsp;server.js
 
 How to Run the Project
 
@@ -60,7 +59,7 @@ npm start
 
 This launches the development server for the frontend.
 
-🔗 How the App Works
+How the App Works
 
 The frontend sends HTTP requests to the backend API.
 
